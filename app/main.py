@@ -4,12 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import  user, auth, translation
 from dotenv import load_dotenv
+import models
 from prometheus_client import make_asgi_app 
 
 load_dotenv()
 
 # Uncomment the line to create the table & schemas needed 
-# models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
