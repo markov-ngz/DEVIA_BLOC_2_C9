@@ -26,6 +26,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db :Session =
     db.commit()
     #create token
     access_token = oauth2.create_access_token(data={"user_id": user.id})
+
     # return token
     return {"access_token":access_token, "token_type":"bearer"}
 

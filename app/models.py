@@ -2,12 +2,13 @@ import datetime
 from typing import List
 from xmlrpc.client import SERVER_ERROR
 from sqlalchemy import  Column, DateTime, ForeignKey, Integer, String, Table, text
-from .database import Base
+from database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class User(Base):
     __tablename__ = 'users'
+    __table_args__ = {'extend_existing': True}
     id: Mapped[int] = mapped_column(primary_key=True)
     email : Mapped[str] = mapped_column(nullable=False, unique= True)
     password: Mapped[str] = mapped_column(nullable=False)
