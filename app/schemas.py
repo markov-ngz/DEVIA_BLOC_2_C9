@@ -34,4 +34,11 @@ class TranslationIn(BaseModel):
 
 class TranslationOut(BaseModel):
     text :str = Field(max_length=256)
-    translation : str = Field(max_length=512)
+    translation : str = Field(max_length=256)
+
+class FeedbackIn(BaseModel):
+    text:str = Field(max_length=256, min_length=1)
+    translation:str = Field(max_length=256, min_length=1)
+    is_correct:bool 
+class FeedbackOut(BaseModel):
+    message:str = Field(max_length=256)

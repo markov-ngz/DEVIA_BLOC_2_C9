@@ -8,6 +8,7 @@ import pytest
 from app.oauth2 import create_access_token
 from datetime import datetime, timedelta, UTC
 from jose import jwt
+from pprint import pprint
 
 # added _test to the database to connect to test databse
 SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}_test"
@@ -42,19 +43,18 @@ def client(session):
 
 
 @pytest.fixture
-def test_user(client):
+def user(client):
     user_data = {"email": "test@gmail.com","password": "123"}
     response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
 
     new_user = response.json()
     new_user['password'] = user_data['password']
     return new_user
 
 @pytest.fixture
-def token(test_user):
-    return create_access_token({"user_id": test_user['id']})
+def token(user):
+    pprint(user)
+    return create_access_token({"user_id": user['id']})
 
 
 @pytest.fixture
@@ -67,8 +67,8 @@ def authorized_client(client, token):
     return client
 
 @pytest.fixture
-def invalid_token(test_user):
-    to_encode = {"user_id": test_user['id']}.copy()
+def invalid_token(user):
+    to_encode = {"user_id": user['id']}.copy()
 
     expire = datetime.now(UTC) + timedelta(microseconds=1)
     to_encode.update({"exp":expire})

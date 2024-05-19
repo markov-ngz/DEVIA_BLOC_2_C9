@@ -4,6 +4,9 @@ import os , sys, time
 from transformers import AutoTokenizer
 from transformers import TFAutoModelForSeq2SeqLM
 from .. import schemas , oauth2
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import TranslationFeedback
 
 router = APIRouter(
     prefix="/translation",
@@ -49,7 +52,7 @@ def translate(sample_text:str)->str:
     return preds[0]
 
 @g.track_inprogress()
-@router.post("/",status_code=200, response_description="API UP & Running",response_model=schemas.TranslationOut)
+@router.post("/",status_code=200, response_description="Translation procesed",response_model=schemas.TranslationOut)
 def get_translation(payload:schemas.TranslationIn, current_user: int = Depends(oauth2.get_current_user)): 
 
     # 1. Get text from payload  ( + metrics )
@@ -69,5 +72,13 @@ def get_translation(payload:schemas.TranslationIn, current_user: int = Depends(o
 
     
     return {"text": text, "translation":translation}
+
+
+@router.post("/feedback",status_code=201, response_description="API UP & Running", response_model=schemas.FeedbackOut)
+def get_translation(payload:schemas.FeedbackIn, db :Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)): 
+    new_fb = TranslationFeedback(**payload.model_dump())
+    db.add(new_fb)
+    db.commit()
+    return {"message":"Feedback Saved"}
 
 

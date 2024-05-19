@@ -8,4 +8,4 @@ SQLAlchemy
 passlib
 prometheus-client
 tf-keras
-bcrypt
+bcrypt==4.0.1
