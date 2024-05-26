@@ -1,6 +1,6 @@
-from fastapi import  Depends, APIRouter 
-from prometheus_client import Gauge, Counter, Summary , Histogram 
-import os , sys, time
+from fastapi import  Depends, APIRouter , Request, Response
+from prometheus_client import Gauge, Counter, Summary , Histogram , CollectorRegistry, generate_latest
+import os , sys, time, base64
 from transformers import AutoTokenizer
 from transformers import TFAutoModelForSeq2SeqLM
 from .. import schemas , oauth2
@@ -27,19 +27,27 @@ elif env== "prod":
     tokenizer=AutoTokenizer.from_pretrained(os.getenv("TOKEN_PATH"))
 
 #-------METRICS ----------------------------------------------------------------------------------------------------
+
+registry = CollectorRegistry()
+NAMESPACE = "slovo" 
+
 # track the flux of inprogress translation 
-g = Gauge('translations_inprogress', 'Inprogress Translations')
+g = Gauge('translations_inprogress', 'Inprogress Translations',namespace=NAMESPACE, registry=registry)
 g.set_to_current_time()
+
 # number of translation
-c = Counter('translation_requests_total', 'Count request')
+c = Counter('translation_requests_total', 'Count request',namespace=NAMESPACE, registry=registry)
+
 # number of translation succeeded
-translation_counts_processed = Counter('translation_counts','Number of text translated') 
+translation_counts_processed = Counter('translation_counts','Number of text translated',namespace=NAMESPACE, registry=registry) 
+
 # average time of processing the request
-REQUEST_TIME =  Histogram('translation_processing_seconds_bis', 'Time spent processing request')
+REQUEST_TIME =  Histogram('translation_processing_seconds_bis', 'Time spent processing request',namespace=NAMESPACE, registry=registry)
+
 # average size of the payload 
-SIZE_BYTES_IN = Histogram('translation_size_bytes_in','In Request size (bytes)')
-SIZE_BYTES_OUT = Histogram('translation_size_bytes_out',' Out Request size (bytes)')
-SIZE_BYTES_GEN= Histogram('translation_size_bytes_gen','Generated Request size (bytes)')
+SIZE_BYTES_IN = Histogram('translation_size_bytes_in','In Request size (bytes)',namespace=NAMESPACE, registry=registry)
+SIZE_BYTES_OUT = Histogram('translation_size_bytes_out',' Out Request size (bytes)',namespace=NAMESPACE, registry=registry)
+SIZE_BYTES_GEN= Histogram('translation_size_bytes_gen','Generated Request size (bytes)',namespace=NAMESPACE, registry=registry)
 #----------------------------------------------------------------------------------------------------------------
 
 
@@ -80,5 +88,22 @@ def get_translation(payload:schemas.FeedbackIn, db :Session = Depends(get_db), c
     db.add(new_fb)
     db.commit()
     return {"message":"Feedback Saved"}
+
+
+PROMETHEUS_PASSWORD = os.getenv("PROMETHEUS_PASSWORD")
+PROMETHEUS_USERNAME = os.getenv("PROMETHEUS_USERNAME")
+
+@router.get("/metrics",status_code=200)
+def metrics(request:Request):
+    if 'Authorization' in request.headers:
+        basic_auth = request.headers['Authorization'][6:]
+        str_basic_auth = base64.b64decode(basic_auth).decode("utf-8")
+        username, password = str_basic_auth.split(":")
+        if username == PROMETHEUS_USERNAME and password == PROMETHEUS_PASSWORD:
+            response = Response(headers={'content_type':'text/plain'},status_code=200)
+            response.write(generate_latest(registry))
+            return response
+    response = Response(status_code = 404 )
+    return response
 
 

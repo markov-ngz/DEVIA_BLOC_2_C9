@@ -1,6 +1,6 @@
 import os, sys
 sys.path.insert(0, os.path.abspath(".."))
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import  user, auth, translation
 from dotenv import load_dotenv
@@ -31,7 +31,8 @@ app.include_router(translation.router)
 metrics_app = make_asgi_app()
 
 @app.get("/",status_code=200)
-def root():
+def root(request: Request):
+    print(request.headers)
     return {"Bonne nuit":"Dobra noc"}
 
 app.mount("/metrics", metrics_app)
