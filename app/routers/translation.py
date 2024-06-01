@@ -17,14 +17,14 @@ router = APIRouter(
 
 env = os.getenv("ENVIRONNEMENT")
 if env == "dev":
-    model=TFAutoModelForSeq2SeqLM.from_pretrained(os.getenv("MODEL_PATH"))
-    tokenizer=AutoTokenizer.from_pretrained(os.getenv("TOKEN_PATH"))
+    model=TFAutoModelForSeq2SeqLM.from_pretrained(os.getenv("MODEL_PATH"),local_files_only=True)
+    tokenizer=AutoTokenizer.from_pretrained(os.getenv("TOKEN_PATH"),local_files_only=True)
 elif env == "test":
     model=TFAutoModelForSeq2SeqLM.from_pretrained(os.getenv("TEST_MODEL_PATH"))
     tokenizer=AutoTokenizer.from_pretrained(os.getenv("TEST_TOKEN_PATH"))
 elif env== "prod":
-    model=TFAutoModelForSeq2SeqLM.from_pretrained(os.getenv("MODEL_PATH"))
-    tokenizer=AutoTokenizer.from_pretrained(os.getenv("TOKEN_PATH"))
+    model=TFAutoModelForSeq2SeqLM.from_pretrained(os.getenv("MODEL_PATH"),local_files_only=True)
+    tokenizer=AutoTokenizer.from_pretrained(os.getenv("TOKEN_PATH"),local_files_only=True)
 
 #-------METRICS ----------------------------------------------------------------------------------------------------
 
