@@ -30,7 +30,7 @@ services:
     restart: always
 volumes:
   postgres-data:
-    name: "pg_db"
+    name: "api_db"
   blue-vol:
     external: true
 networks:
