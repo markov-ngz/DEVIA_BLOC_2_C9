@@ -1,0 +1,11 @@
+fastapi
+python-jose
+transformers
+sentencepiece
+tensorflow
+psycopg2
+SQLAlchemy==2.0.29
+passlib
+prometheus-client
+tf-keras
+bcrypt==4.0.1
