@@ -29,7 +29,7 @@ elif env== "prod":
 #-------METRICS ----------------------------------------------------------------------------------------------------
 
 registry = CollectorRegistry()
-NAMESPACE = "slovo" 
+NAMESPACE = "model" 
 
 # track the flux of inprogress translation 
 g = Gauge('translations_inprogress', 'Inprogress Translations',namespace=NAMESPACE, registry=registry)
@@ -61,8 +61,8 @@ def translate(sample_text:str)->str:
 
 @g.track_inprogress()
 @router.post("/",status_code=200, response_description="Translation procesed",response_model=schemas.TranslationOut)
-def get_translation(payload:schemas.TranslationIn, current_user: int = Depends(oauth2.get_current_user)): 
-
+def get_translation(payload:schemas.TranslationIn): 
+    # current_user: int = Depends(oauth2.get_current_user)
     # 1. Get text from payload  ( + metrics )
     c.inc()
     size_payload = sys.getsizeof(payload.text)
@@ -95,6 +95,9 @@ PROMETHEUS_USERNAME = os.getenv("PROMETHEUS_USERNAME")
 
 @router.get("/metrics",status_code=200)
 def metrics(request:Request):
+    response = Response(status_code=200)
+    response.content = generate_latest(registry)
+    return  generate_latest(registry)
     if 'Authorization' in request.headers:
         basic_auth = request.headers['Authorization'][6:]
         str_basic_auth = base64.b64decode(basic_auth).decode("utf-8")

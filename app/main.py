@@ -8,7 +8,7 @@ from app import models
 from prometheus_client import make_asgi_app 
 from app.database import engine
 load_dotenv()
-
+from app.routers.translation import registry
 # Uncomment the line to create the table & schemas needed 
 models.Base.metadata.create_all(bind=engine)
 
@@ -28,7 +28,7 @@ app.include_router(auth.router)
 app.include_router(translation.router)
 
 
-metrics_app = make_asgi_app()
+metrics_app = make_asgi_app(registry=registry)
 
 @app.get("/",status_code=200)
 def root(request: Request):
