@@ -1,4 +1,4 @@
-FROM python:3.12-bookworm
+FROM python:3.11.9-bookworm
 
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
@@ -25,12 +25,13 @@ COPY ./entrypoint.sh /
 
 RUN chmod +x /entrypoint.sh
 
-RUN mkdir -p statics \
-	&& chown -R appuser:appgroup statics \
-	&& chmod -R 755 statics \
-	&& mkdir hf_cache \
-	&& chown -R appuser:appgroup hf_cache \
-	&& chmod -R 755 hf_cache
+# ugly multiple layers, as a bug occured on windows building the image  zzzzz
+RUN mkdir -p statics 
+RUN mkdir -p hf_cache 
+RUN chown -R appuser:appgroup statics
+RUN chmod -R 755 statics
+RUN chown -R appuser:appgroup hf_cache 
+RUN chmod -R 755 hf_cache
 
 USER appuser
 
