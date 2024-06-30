@@ -28,11 +28,39 @@ services:
     depends_on:
       - db
     restart: always
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+    - '3000:3000'
+    networks:
+      monitoring_net:
+        ipv4_address: 172.20.0.4
+    volumes:
+      - grafana-storage:/var/lib/grafana
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    networks:
+      monitoring_net:
+        ipv4_address: 172.20.0.5
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
+
 volumes:
   postgres-data:
     name: "api_db"
   blue-vol:
     external: true
+  grafana-storage: {}
+  prom_data:
 networks:
   net1:
     name: net1
