@@ -33,9 +33,9 @@ services:
     container_name: grafana
     restart: unless-stopped
     ports:
-    - '3000:3000'
+    - '127.0.0.1:3000:3000'
     networks:
-      monitoring_net:
+      net1:
         ipv4_address: 172.20.0.4
     volumes:
       - grafana-storage:/var/lib/grafana
@@ -45,10 +45,10 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - 9090:9090
+      - 127.0.0.1:9090:9090
     restart: unless-stopped
     networks:
-      monitoring_net:
+      net1:
         ipv4_address: 172.20.0.5
     volumes:
       - ./prometheus:/etc/prometheus
