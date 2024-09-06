@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
-  && apt-get upgrade \
+  && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
 	build-essential \
 	libpq-dev \	
