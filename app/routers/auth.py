@@ -9,7 +9,6 @@ router = APIRouter(tags=['Authentication'])
 @router.post('/login',response_model=schemas.Token, status_code=200)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db :Session = Depends(database.get_db)):
 
-    print(user_credentials)
     user = db.query(models.User).filter(
         models.User.email == user_credentials.username).first()
 
@@ -20,10 +19,13 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db :Session =
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
     
     #update last login date
-    db.query(models.User).\
-    filter(models.User.email == user_credentials.username).\
-    update({'last_login': datetime.now()})
-    db.commit()
+    try:
+        db.query(models.User).\
+        filter(models.User.email == user_credentials.username).\
+        update({'last_login': datetime.now()})
+        db.commit()
+    except Exception as  e : 
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,detail="Server side error, please try again later")
     #create token
     access_token = oauth2.create_access_token(data={"user_id": user.id})
 

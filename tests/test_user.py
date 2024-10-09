@@ -10,7 +10,7 @@ def test_read_main(client):
     assert response.json() == {"Bonne nuit":"Dobra noc"}
 
 def test_create_user(client):
-    response = client.post("/users",json={"email":"test3@gmail.com","password":"123"})
+    response = client.post("/signup",json={"email":"test3@gmail.com","password":"123"})
     new_user = schemas.UserOut(**response.json())
     assert response.status_code == 201
     assert new_user.email == "test3@gmail.com"
