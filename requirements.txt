@@ -5,6 +5,7 @@ sentencepiece
 tensorflow
 psycopg2
 SQLAlchemy==2.0.29
+uvicorn[standard]
 passlib
 prometheus-client
 tf-keras
