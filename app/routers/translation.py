@@ -95,17 +95,16 @@ PROMETHEUS_USERNAME = os.getenv("PROMETHEUS_USERNAME")
 
 @router.get("/metrics",status_code=200)
 def metrics(request:Request):
-    response = Response(status_code=200)
-    response.content = generate_latest(registry)
-    return  generate_latest(registry)
+
+   
     if 'Authorization' in request.headers:
         basic_auth = request.headers['Authorization'][6:]
         str_basic_auth = base64.b64decode(basic_auth).decode("utf-8")
         username, password = str_basic_auth.split(":")
         if username == PROMETHEUS_USERNAME and password == PROMETHEUS_PASSWORD:
-            response = Response(headers={'content_type':'text/plain'},status_code=200)
-            response.write(generate_latest(registry))
-            return response
+            # response = Response(headers={'content_type':'text/plain'},status_code=200)
+            # response.write(generate_latest(registry))
+            return  generate_latest(registry)
     response = Response(status_code = 404 )
     return response
 
