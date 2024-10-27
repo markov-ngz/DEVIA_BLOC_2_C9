@@ -94,7 +94,7 @@ def get_translation(payload:schemas.FeedbackIn, db :Session = Depends(get_db), c
 PROMETHEUS_PASSWORD = os.getenv("PROMETHEUS_PASSWORD")
 PROMETHEUS_USERNAME = os.getenv("PROMETHEUS_USERNAME")
 
-@router.get("/metrics",status_code=200)
+@router.get("/metrics/",status_code=200)
 def metrics(request:Request):
 
    
