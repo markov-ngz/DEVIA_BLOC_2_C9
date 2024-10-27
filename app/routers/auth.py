@@ -16,7 +16,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db :Session =
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
     
     if not utils.verify(user_credentials.password, user.password):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Invalid Credentials")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Could not validate password")
     
     #update last login date
     try:

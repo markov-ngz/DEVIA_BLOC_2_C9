@@ -53,6 +53,7 @@ SIZE_BYTES_GEN= Histogram('translation_size_bytes_gen','Generated Request size (
 
 
 def translate(sample_text:str)->str: 
+
     batch = tokenizer([sample_text], return_tensors="tf")
     gen = model.generate(**batch)
     preds = tokenizer.batch_decode(gen, skip_special_tokens=True)
@@ -61,8 +62,8 @@ def translate(sample_text:str)->str:
 
 @g.track_inprogress()
 @router.post("/",status_code=200, response_description="Translation procesed",response_model=schemas.TranslationOut)
-def get_translation(payload:schemas.TranslationIn): 
-    # current_user: int = Depends(oauth2.get_current_user)
+def get_translation(payload:schemas.TranslationIn,current_user: int = Depends(oauth2.get_current_user)): 
+
     # 1. Get text from payload  ( + metrics )
     c.inc()
     size_payload = sys.getsizeof(payload.text)
